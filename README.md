@@ -1,10 +1,17 @@
 # Fingers on Buzzers
 
+## About
+
+A social web app, with the concept of allowing you and your friends to participate in a TV-style quiz show.
+
+Intended to be used by a number of players in a voice chat with each other.
+
 ## Requirements
 
 * [Docker for Windows](https://docs.docker.com/desktop/install/windows-install/)
 * [IntelliJ](https://www.jetbrains.com/idea/)
 * [Java 17](https://adoptium.net/en-GB/temurin/releases/)
+* [Node 18](https://nodejs.org/en)
 
 ## Setup
 
