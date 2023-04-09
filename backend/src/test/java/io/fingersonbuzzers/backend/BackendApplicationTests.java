@@ -1,19 +1,26 @@
 package io.fingersonbuzzers.backend;
 
+import io.fingersonbuzzers.backend.configuration.ClockConfiguration;
 import io.fingersonbuzzers.backend.integrationtest.AbstractIntegrationTest;
 import jakarta.persistence.EntityManager;
+import java.time.Clock;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import org.springframework.context.annotation.Import;
+import static org.assertj.core.api.Assertions.assertThat;
 
-class BackendApplicationTests extends AbstractIntegrationTest {
+@Import(ClockConfiguration.class)
+class BackendApplicationContextTests extends AbstractIntegrationTest {
 
   @Autowired
   EntityManager entityManager;
 
+  @Autowired
+  Clock clock;
+
   @Test
   void contextLoads() {
-    assertDoesNotThrow(() -> {});
+    assertThat(entityManager).isNotNull();
+    assertThat(clock).isNotNull();
   }
-
 }
