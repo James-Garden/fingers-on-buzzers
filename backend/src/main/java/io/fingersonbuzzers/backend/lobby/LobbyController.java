@@ -33,10 +33,7 @@ public class LobbyController {
 
     var playerName = form.playerName().strip();
     var lobby = new Lobby();
-    var player = Player.builder()
-        .name(playerName)
-        .lobby(lobby)
-        .build();
+    var player = new Player(lobby, playerName);
     lobbyService.createLobby(lobby, player);
 
     return CreateLobbyResponse.success(lobby.getId(), player.getId());

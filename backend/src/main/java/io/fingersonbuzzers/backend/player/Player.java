@@ -9,17 +9,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "players")
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class Player {
 
   @Id
@@ -37,8 +33,21 @@ public class Player {
   @UpdateTimestamp
   private Instant updatedTimestamp;
 
+  public Player(Lobby lobby, String name) {
+    this.lobby = lobby;
+    this.name = name;
+  }
+
   public UUID getId() {
     return id;
   }
 
+
+  public Lobby getLobby() {
+    return lobby;
+  }
+
+  public String getName() {
+    return name;
+  }
 }
