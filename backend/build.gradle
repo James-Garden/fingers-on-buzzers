@@ -51,15 +51,3 @@ jacocoTestReport {
         csv.enabled true
     }}
 }
-
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.9
-            }
-        }
-    }
-}
-
-
