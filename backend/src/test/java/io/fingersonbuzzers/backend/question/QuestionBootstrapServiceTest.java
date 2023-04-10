@@ -1,8 +1,6 @@
 package io.fingersonbuzzers.backend.question;
 
 import java.io.IOException;
-import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,9 +21,6 @@ class QuestionBootstrapServiceTest {
   @Mock
   private QuestionRepository questionRepository;
 
-  @Mock
-  private Clock clock;
-
   @InjectMocks
   private QuestionBootstrapService questionBootstrapService;
 
@@ -43,10 +38,7 @@ class QuestionBootstrapServiceTest {
 
   @Test
   void bootstrapQuestionsData_EmptyDb_AssertSaves() throws IOException {
-    var instant = Instant.now();
-
     when(questionRepository.existsByIdIsNotNull()).thenReturn(false);
-    when(clock.instant()).thenReturn(instant);
 
     questionBootstrapService.bootstrapQuestionsData();
 
@@ -56,21 +48,15 @@ class QuestionBootstrapServiceTest {
     var savedQuestions = questionsArgumentCaptor.getValue();
     assertThat(savedQuestions).extracting(
         Question::getQuestionText,
-        Question::getAnswer,
-        Question::getCreatedTimestamp,
-        Question::getUpdatedTimestamp
+        Question::getAnswer
     ).containsExactly(
         tuple(
             "Test question 1",
-            "Test answer 1",
-            instant,
-            instant
+            "Test answer 1"
         ),
         tuple(
             "Test question 2",
-            "Test answer 2",
-            instant,
-            instant
+            "Test answer 2"
         )
     );
   }

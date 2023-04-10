@@ -8,6 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "questions")
@@ -21,8 +23,10 @@ public class Question {
 
   private String answer;
 
+  @CreationTimestamp
   private Instant createdTimestamp;
 
+  @UpdateTimestamp
   private Instant updatedTimestamp;
 
   public Question() {
@@ -41,21 +45,5 @@ public class Question {
 
   public String getAnswer() {
     return answer;
-  }
-
-  public Instant getCreatedTimestamp() {
-    return createdTimestamp;
-  }
-
-  public void setCreatedTimestamp(Instant createdTimestamp) {
-    this.createdTimestamp = createdTimestamp;
-  }
-
-  public Instant getUpdatedTimestamp() {
-    return updatedTimestamp;
-  }
-
-  public void setUpdatedTimestamp(Instant updatedTimestamp) {
-    this.updatedTimestamp = updatedTimestamp;
   }
 }
