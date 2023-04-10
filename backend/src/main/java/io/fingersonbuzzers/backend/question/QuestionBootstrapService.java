@@ -3,7 +3,6 @@ package io.fingersonbuzzers.backend.question;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.time.Clock;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -17,13 +16,10 @@ class QuestionBootstrapService {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   private final QuestionRepository questionRepository;
-  private final Clock clock;
 
   @Autowired
-  QuestionBootstrapService(QuestionRepository questionRepository,
-                           Clock clock) {
+  QuestionBootstrapService(QuestionRepository questionRepository) {
     this.questionRepository = questionRepository;
-    this.clock = clock;
   }
 
   @EventListener(ApplicationReadyEvent.class)
@@ -34,10 +30,6 @@ class QuestionBootstrapService {
 
     var questionsFile = new ClassPathResource("json/questions-bootstrap-data.json").getFile();
     var questions = MAPPER.readValue(questionsFile, new TypeReference<List<Question>>() {});
-    questions.forEach(question -> {
-      question.setCreatedTimestamp(clock.instant());
-      question.setUpdatedTimestamp(question.getCreatedTimestamp());
-    });
     questionRepository.saveAll(questions);
   }
 }

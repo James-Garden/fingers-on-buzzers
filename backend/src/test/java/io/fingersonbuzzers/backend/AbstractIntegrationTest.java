@@ -1,5 +1,7 @@
-package io.fingersonbuzzers.backend.integrationtest;
+package io.fingersonbuzzers.backend;
 
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -15,6 +17,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(initializers = {AbstractIntegrationTest.Initializer.class})
 public abstract class AbstractIntegrationTest {
+
+  @Autowired
+  protected EntityManager entityManager;
 
   @SuppressWarnings("resource")
   @Container

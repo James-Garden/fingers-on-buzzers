@@ -1,27 +1,31 @@
-package io.fingersonbuzzers.backend.question;
+package io.fingersonbuzzers.backend.player;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.fingersonbuzzers.backend.lobby.Lobby;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "questions")
-public class Question {
+@Table(name = "players")
+@NoArgsConstructor
+public class Player {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  private String questionText;
+  @ManyToOne
+  private Lobby lobby;
 
-  private String answer;
+  private String name;
 
   @CreationTimestamp
   private Instant createdTimestamp;
@@ -29,21 +33,21 @@ public class Question {
   @UpdateTimestamp
   private Instant updatedTimestamp;
 
-  public Question() {
+  public Player(Lobby lobby, String name) {
+    this.lobby = lobby;
+    this.name = name;
   }
 
-  @SuppressWarnings("unused")
-  public Question(@JsonProperty("question") String questionText,
-                  @JsonProperty("answer") String answer) {
-    this.questionText = questionText;
-    this.answer = answer;
+  public UUID getId() {
+    return id;
   }
 
-  public String getQuestionText() {
-    return questionText;
+
+  public Lobby getLobby() {
+    return lobby;
   }
 
-  public String getAnswer() {
-    return answer;
+  public String getName() {
+    return name;
   }
 }
