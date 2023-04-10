@@ -55,7 +55,7 @@ class LobbyControllerTest extends AbstractControllerTest {
 
   @Test
   void createLobby_ValidForm_AssertCreatesLobby() throws Exception {
-    var form = new PlayerForm("");
+    var form = new PlayerForm("name ");
     var formJson = MAPPER.writeValueAsString(form);
     var validationResult = ValidationResultTestUtil.validationResultNoError();
     var lobbyId = UUID.randomUUID();
@@ -89,7 +89,17 @@ class LobbyControllerTest extends AbstractControllerTest {
 
     verify(lobbyService).createLobby(lobbyCaptor.capture(), playerCaptor.capture());
 
-    assertThat(lobbyCaptor.getValue().getId()).isEqualTo(lobbyId);
-    assertThat(playerCaptor.getValue().getId()).isEqualTo(playerId);
+    var lobby = lobbyCaptor.getValue();
+
+    assertThat(lobby.getId()).isEqualTo(lobbyId);
+    assertThat(playerCaptor.getValue()).extracting(
+        Player::getId,
+        Player::getName,
+        Player::getLobby
+    ).containsExactly(
+        playerId,
+        form.playerName().strip(),
+        lobby
+    );
   }
 }
