@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +19,7 @@ public class LobbyService {
   private final LobbyRepository lobbyRepository;
   private final PlayerRepository playerRepository;
 
+  @Autowired
   public LobbyService(LobbyRepository lobbyRepository,
                       PlayerRepository playerRepository) {
     this.lobbyRepository = lobbyRepository;

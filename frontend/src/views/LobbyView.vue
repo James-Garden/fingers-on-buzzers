@@ -10,7 +10,7 @@ const playerStore = currentPlayerStore();
 
 onMounted(() => {
   if (!lobbyStore.lobby) {
-    router.replace("/")
+    router.replace("/");
   }
 })
 

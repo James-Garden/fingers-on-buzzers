@@ -20,13 +20,11 @@ public class LobbyFormValidator {
 
     if (StringUtils.isBlank(form.playerName())) {
       errors.reject(LobbyForm.PLAYER_NAME_FIELD, "required");
-      return errors;
     }
 
     if (Objects.nonNull(form.playerId())
         && !playerRepository.existsById(form.playerId())) {
       errors.reject(LobbyForm.PLAYER_ID_FIELD, "invalid");
-      return errors;
     }
 
     return errors;
