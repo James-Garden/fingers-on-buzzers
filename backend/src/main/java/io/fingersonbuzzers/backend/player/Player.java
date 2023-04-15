@@ -33,11 +33,6 @@ public class Player {
   @UpdateTimestamp
   private Instant updatedTimestamp;
 
-  public Player(Lobby lobby, String name) {
-    this.lobby = lobby;
-    this.name = name;
-  }
-
   public UUID getId() {
     return id;
   }
@@ -47,7 +42,15 @@ public class Player {
     return lobby;
   }
 
+  public void setLobby(Lobby lobby) {
+    this.lobby = lobby;
+  }
+
   public String getName() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

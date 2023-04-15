@@ -10,11 +10,7 @@ public record ValidationResult(Set<FieldError> fieldErrors) {
   }
 
   public void reject(String fieldName, String errorCode) {
-    reject(fieldName, errorCode, null);
-  }
-
-  public void reject(String fieldName, String errorCode, Object additionalData) {
-    fieldErrors.add(new FieldError(fieldName, errorCode, additionalData));
+    fieldErrors.add(new FieldError(fieldName, errorCode));
   }
 
   public boolean hasErrors() {

@@ -1,12 +1,15 @@
 package io.fingersonbuzzers.backend;
 
+import io.fingersonbuzzers.backend.configuration.AllowedOrigins;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -16,6 +19,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(initializers = {AbstractIntegrationTest.Initializer.class})
+@ActiveProfiles("test")
+@EnableConfigurationProperties(AllowedOrigins.class)
 public abstract class AbstractIntegrationTest {
 
   @Autowired
