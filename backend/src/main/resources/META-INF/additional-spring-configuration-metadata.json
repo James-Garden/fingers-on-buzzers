@@ -1,0 +1,9 @@
+{
+  "groups": [
+    {
+      "name": "allowed-origins",
+      "sourceType": "io.fingersonbuzzers.backend.configuration.AllowedOrigins",
+      "description": "Allowed origins for API requests."
+    }
+  ]
+}
