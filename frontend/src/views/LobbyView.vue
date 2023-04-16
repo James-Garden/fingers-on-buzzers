@@ -4,13 +4,14 @@ import { currentLobbyStore } from "@/stores/lobby";
 import { onMounted } from "vue";
 import router from "@/router";
 import { currentPlayerStore } from "@/stores/player";
+import InviteLink from "@/components/lobby/InviteLink.vue";
 
 const lobbyStore = currentLobbyStore();
 const playerStore = currentPlayerStore();
 
 onMounted(() => {
   if (!lobbyStore.lobby) {
-    router.replace("/");
+    router.replace({ name: "create-or-join-lobby" });
   }
 })
 
@@ -19,4 +20,5 @@ onMounted(() => {
 <template>
   <p>In lobby: {{ lobbyStore.lobby?.lobbyId }}</p><br>
   <p>Your name: {{ playerStore.player?.playerName }}</p>
+  <InviteLink/>
 </template>

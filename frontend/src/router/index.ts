@@ -5,8 +5,9 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'create-lobby',
-      component: () => import('@/views/CreateLobbyView.vue')
+      name: 'create-or-join-lobby',
+      component: () => import('@/views/CreateOrJoinLobbyView.vue'),
+      props: route => ({lobbyId: route.query.lobbyId})
     },
     {
       path: '/lobby',
