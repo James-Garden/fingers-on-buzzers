@@ -21,12 +21,22 @@ public class LobbyController {
   }
 
   @PostMapping("/create")
-  public CreateLobbyResponse createLobby(@RequestBody LobbyForm form) {
+  public LobbyResponse createLobby(@RequestBody LobbyForm form) {
     var validationResult = lobbyFormValidator.validate(form);
     if (validationResult.hasErrors()) {
-      return CreateLobbyResponse.failure(validationResult);
+      return LobbyResponse.failure(validationResult);
     }
 
     return lobbyService.createLobby(form);
+  }
+
+  @PostMapping("/join")
+  public LobbyResponse joinLobby(@RequestBody LobbyForm form) {
+    var validationResult = lobbyFormValidator.validateWithLobby(form);
+    if (validationResult.hasErrors()) {
+      return LobbyResponse.failure(validationResult);
+    }
+
+    return lobbyService.joinLobby(form);
   }
 }

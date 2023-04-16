@@ -6,15 +6,12 @@ import io.fingersonbuzzers.backend.player.PlayerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LobbyService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(LobbyService.class);
 
   private final LobbyRepository lobbyRepository;
   private final PlayerRepository playerRepository;
@@ -26,21 +23,10 @@ public class LobbyService {
     this.playerRepository = playerRepository;
   }
 
-  public CreateLobbyResponse createLobby(LobbyForm form) {
-    try {
-      return createLobbyUnchecked(form);
-    } catch (EntityNotFoundException exception) {
-      var message = "Failed to create Lobby as Player with [playerId=%s] and [playerName=%s] could not be found"
-          .formatted(form.playerId(), form.playerName());
-      LOGGER.error(message, exception);
-      throw new EntityNotFoundException(message, exception);
-    }
-  }
-
   @Transactional
-  public CreateLobbyResponse createLobbyUnchecked(LobbyForm form) throws EntityNotFoundException {
+  public LobbyResponse createLobby(LobbyForm form) {
     var player = Optional.ofNullable(form.playerId())
-        .map(playerRepository::getById)
+        .flatMap(playerRepository::findById)
         .orElse(new Player());
     player.setName(form.playerName());
     playerRepository.save(player);
@@ -52,7 +38,22 @@ public class LobbyService {
     player.setLobby(lobby);
     playerRepository.save(player);
 
-    return CreateLobbyResponse.success(LobbyDto.from(lobby), PlayerDto.from(player));
+    return LobbyResponse.success(LobbyDto.from(lobby), PlayerDto.from(player));
   }
 
+  @Transactional
+  public LobbyResponse joinLobby(LobbyForm form) throws EntityNotFoundException {
+    var lobby = lobbyRepository.findById(form.lobbyId())
+        .orElseThrow(() ->
+            new EntityNotFoundException("Failed to join Lobby with [lobbyId=%s] as it could not be found"
+                .formatted(form.lobbyId().toString())));
+    var player = Optional.ofNullable(form.playerId())
+        .flatMap(playerRepository::findById)
+        .orElse(new Player());
+    player.setName(form.playerName());
+    player.setLobby(lobby);
+    playerRepository.save(player);
+
+    return LobbyResponse.success(LobbyDto.from(lobby), PlayerDto.from(player));
+  }
 }

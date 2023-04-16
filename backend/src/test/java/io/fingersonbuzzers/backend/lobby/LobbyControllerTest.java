@@ -33,10 +33,10 @@ class LobbyControllerTest extends AbstractControllerTest {
 
   @Test
   void createLobby_InvalidForm_AssertFailure() throws Exception {
-    var form = new LobbyForm("", UUID.randomUUID());
+    var form = new LobbyForm("", UUID.randomUUID(), null);
     var formJson = MAPPER.writeValueAsString(form);
     var validationResult = ValidationResultTestUtil.validationResultWithError();
-    var expectedResponseJson = MAPPER.writeValueAsString(CreateLobbyResponse.failure(validationResult));
+    var expectedResponseJson = MAPPER.writeValueAsString(LobbyResponse.failure(validationResult));
 
     when(lobbyFormValidator.validate(any(LobbyForm.class))).thenReturn(validationResult);
 
@@ -57,10 +57,10 @@ class LobbyControllerTest extends AbstractControllerTest {
 
   @Test
   void createLobby_ValidForm_AssertSuccess() throws Exception {
-    var form = new LobbyForm("test name", UUID.randomUUID());
+    var form = new LobbyForm("test name", UUID.randomUUID(), null);
     var formJson = MAPPER.writeValueAsString(form);
     var validationResult = ValidationResultTestUtil.validationResultNoError();
-    var expectedResponse = CreateLobbyResponse.success(
+    var expectedResponse = LobbyResponse.success(
         new LobbyDto(UUID.randomUUID()),
         new PlayerDto(UUID.randomUUID(), "test name")
     );
@@ -82,5 +82,57 @@ class LobbyControllerTest extends AbstractControllerTest {
     assertThat(lobbyFormArgumentCaptor.getValue())
         .extracting(LobbyForm::playerId, LobbyForm::playerName)
         .containsExactly(form.playerId(), form.playerName());
+  }
+
+  @Test
+  void joinLobby_InvalidForm_AssertFailure() throws Exception {
+    var form = new LobbyForm("test name", UUID.randomUUID(), UUID.randomUUID());
+    var formJson = MAPPER.writeValueAsString(form);
+    var validationResult = ValidationResultTestUtil.validationResultWithError();
+    var expectedResponse = LobbyResponse.failure(validationResult);
+    var expectedResponseJson = MAPPER.writeValueAsString(expectedResponse);
+
+    when(lobbyFormValidator.validateWithLobby(any(LobbyForm.class))).thenReturn(validationResult);
+
+    mockMvc.perform(
+        post("/api/lobby/join")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(formJson))
+        .andExpect(status().isOk())
+        .andExpect(content().json(expectedResponseJson));
+
+    verify(lobbyFormValidator).validateWithLobby(lobbyFormArgumentCaptor.capture());
+
+    assertThat(lobbyFormArgumentCaptor.getValue())
+        .extracting(LobbyForm::playerName, LobbyForm::playerId, LobbyForm::lobbyId)
+        .containsExactly(form.playerName(), form.playerId(), form.lobbyId());
+  }
+
+  @Test
+  void joinLobby_ValidForm_AssertSuccess() throws Exception {
+    var form = new LobbyForm("test name", UUID.randomUUID(), UUID.randomUUID());
+    var formJson = MAPPER.writeValueAsString(form);
+    var validationResult = ValidationResultTestUtil.validationResultNoError();
+    var playerDto = new PlayerDto(form.playerId(), form.playerName());
+    var lobbyDto = new LobbyDto(form.lobbyId());
+    var expectedResponse = LobbyResponse.success(lobbyDto, playerDto);
+    var expectedResponseJson = MAPPER.writeValueAsString(expectedResponse);
+
+    when(lobbyFormValidator.validateWithLobby(any(LobbyForm.class))).thenReturn(validationResult);
+    when(lobbyService.joinLobby(any(LobbyForm.class))).thenReturn(expectedResponse);
+
+    mockMvc.perform(
+            post("/api/lobby/join")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(formJson))
+        .andExpect(status().isOk())
+        .andExpect(content().json(expectedResponseJson));
+
+    verify(lobbyFormValidator).validateWithLobby(lobbyFormArgumentCaptor.capture());
+    verify(lobbyService).joinLobby(lobbyFormArgumentCaptor.getValue());
+
+    assertThat(lobbyFormArgumentCaptor.getValue())
+        .extracting(LobbyForm::playerName, LobbyForm::playerId, LobbyForm::lobbyId)
+        .containsExactly(form.playerName(), form.playerId(), form.lobbyId());
   }
 }

@@ -9,7 +9,10 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record LobbyForm(@JsonProperty String playerName,
                         @JsonDeserialize(using = UUIDDeserializer.class)
-                        @JsonProperty UUID playerId) {
+                        @JsonProperty UUID playerId,
+                        @JsonDeserialize(using = UUIDDeserializer.class)
+                        @JsonProperty UUID lobbyId) {
   public static final String PLAYER_NAME_FIELD = "playerName";
   public static final String PLAYER_ID_FIELD = "playerId";
+  public static final String LOBBY_ID_FIELD = "lobbyId";
 }
