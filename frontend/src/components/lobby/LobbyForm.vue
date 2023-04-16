@@ -80,7 +80,7 @@ async function updateStoresAndRedirect(createLobbyResponse: LobbyResponse) {
   playerStore.update(createLobbyResponse.playerData);
   lobbyStore.update(createLobbyResponse.lobbyData);
 
-  await router.push("/lobby");
+  await router.push({ name: "lobby" });
 }
 
 function validateForm(trimmedPlayerName: string, validationResult?: ValidationResult): boolean {
