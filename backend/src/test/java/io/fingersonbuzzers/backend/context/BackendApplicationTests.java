@@ -4,8 +4,6 @@ import io.fingersonbuzzers.backend.AbstractIntegrationTest;
 import io.fingersonbuzzers.backend.configuration.AllowedOrigins;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Import;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BackendApplicationTests extends AbstractIntegrationTest {

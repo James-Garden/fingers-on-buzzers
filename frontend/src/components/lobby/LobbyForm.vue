@@ -7,7 +7,7 @@ import { currentLobbyStore } from "@/stores/lobby";
 import axios from "axios";
 import router from "@/router";
 import ValidatedTextInput from "@/components/ValidatedTextInput.vue";
-import type { ValidationResult } from "@/helpers/validation-result";
+import { hasValidationErrors } from "@/helpers/validation-helper";
 
 interface Props {
   lobbyId?: string
@@ -19,7 +19,6 @@ const createOrJoinText = ref(props.lobbyId ? "Join Lobby" : "Create Lobby");
 interface LobbyResponse {
   lobbyData: Lobby,
   playerData: Player
-  errors: ValidationResult
 }
 
 const lobbyStore = currentLobbyStore();
@@ -48,13 +47,14 @@ async function joinLobby() {
     playerId: playerStore.player?.playerId,
     lobbyId: props.lobbyId
   });
-  const lobbyResponse: LobbyResponse = response.data;
-
-  if (!validateForm(trimmedPlayerName, lobbyResponse.errors)) {
+  if (hasValidationErrors(response)) {
+    const errors: Map<string, string> = response.data;
+    activeNameError.value = errors.get("playerName")??"";
     return;
   }
+  const joinLobbyResponse: LobbyResponse = response.data;
 
-  await updateStoresAndRedirect(lobbyResponse);
+  await updateStoresAndRedirect(joinLobbyResponse);
 }
 
 async function createLobby() {
@@ -67,11 +67,12 @@ async function createLobby() {
     playerName: trimmedPlayerName,
     playerId: playerStore.player?.playerId
   });
-  const createLobbyResponse: LobbyResponse = response.data;
-
-  if (!validateForm(trimmedPlayerName, createLobbyResponse.errors)) {
+  if (hasValidationErrors(response)) {
+    const errors: Map<string, string> = response.data;
+    activeNameError.value = errors.get("playerName")??"";
     return;
   }
+  const createLobbyResponse: LobbyResponse = response.data;
 
   await updateStoresAndRedirect(createLobbyResponse);
 }
@@ -83,17 +84,14 @@ async function updateStoresAndRedirect(createLobbyResponse: LobbyResponse) {
   await router.push({ name: "lobby" });
 }
 
-function validateForm(trimmedPlayerName: string, validationResult?: ValidationResult): boolean {
-  if (trimmedPlayerName === "") {
+function validateForm(trimmedPlayerName: string): boolean {
+  const playerNameIsBlank = trimmedPlayerName === "";
+  if (playerNameIsBlank) {
     activeNameError.value = nameError;
-    return false;
+  } else {
+    activeNameError.value = "";
   }
-
-  if (validationResult) {
-    activeNameError.value = nameError;
-    return false;
-  }
-  return true;
+  return !playerNameIsBlank;
 }
 
 function getTrimmedPlayerName(): string {

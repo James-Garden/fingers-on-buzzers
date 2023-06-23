@@ -38,7 +38,7 @@ public class LobbyService {
     player.setLobby(lobby);
     playerRepository.save(player);
 
-    return LobbyResponse.success(LobbyDto.from(lobby), PlayerDto.from(player));
+    return new LobbyResponse(LobbyDto.from(lobby), PlayerDto.from(player));
   }
 
   @Transactional
@@ -54,6 +54,6 @@ public class LobbyService {
     player.setLobby(lobby);
     playerRepository.save(player);
 
-    return LobbyResponse.success(LobbyDto.from(lobby), PlayerDto.from(player));
+    return new LobbyResponse(LobbyDto.from(lobby), PlayerDto.from(player));
   }
 }

@@ -1,7 +1,8 @@
 package io.fingersonbuzzers.backend.lobby;
 
 import io.fingersonbuzzers.backend.player.PlayerRepository;
-import io.fingersonbuzzers.backend.validation.FieldError;
+import io.fingersonbuzzers.backend.utils.ValidationTestUtil;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,13 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,10 +37,7 @@ class LobbyFormValidatorTest {
   void validate_ValidForm_AssertNoErrors() {
     var form = new LobbyForm("test name", null, null);
 
-    var result = lobbyFormValidator.validate(form);
-
-    assertFalse(result.hasErrors());
-    assertThat(result.fieldErrors()).isEmpty();
+    ValidationTestUtil.assertPassesValidation(() -> lobbyFormValidator.validate(form, LobbyForm.FormType.CREATE_LOBBY));
   }
 
   @ParameterizedTest
@@ -54,12 +46,10 @@ class LobbyFormValidatorTest {
   void validate_MissingPlayerName_AssertError(String blankPlayerName) {
     var form = new LobbyForm(blankPlayerName, null, null);
 
-    var result = lobbyFormValidator.validate(form);
-
-    assertTrue(result.hasErrors());
-    assertThat(result.fieldErrors())
-        .extracting(FieldError::fieldName, FieldError::errorCode)
-        .containsExactly(tuple(LobbyForm.PLAYER_NAME_FIELD, "required"));
+    ValidationTestUtil.assertFailsValidationWithErrors(
+        () -> lobbyFormValidator.validate(form, LobbyForm.FormType.CREATE_LOBBY),
+        Map.of("playerName", "playerName must not be blank")
+    );
   }
 
   @Test
@@ -68,12 +58,10 @@ class LobbyFormValidatorTest {
 
     when(playerRepository.existsById(form.playerId())).thenReturn(false);
 
-    var result = lobbyFormValidator.validate(form);
-
-    assertTrue(result.hasErrors());
-    assertThat(result.fieldErrors())
-        .extracting(FieldError::fieldName, FieldError::errorCode)
-        .containsExactly(tuple(LobbyForm.PLAYER_ID_FIELD, "invalid"));
+    ValidationTestUtil.assertFailsValidationWithErrors(
+        () -> lobbyFormValidator.validate(form, LobbyForm.FormType.CREATE_LOBBY),
+        Map.of(LobbyForm.PLAYER_ID_FIELD, "%s is not a valid playerId".formatted(form.playerId()))
+    );
   }
 
   @Test
@@ -82,10 +70,7 @@ class LobbyFormValidatorTest {
 
     when(playerRepository.existsById(form.playerId())).thenReturn(true);
 
-    var result = lobbyFormValidator.validate(form);
-
-    assertFalse(result.hasErrors());
-    assertThat(result.fieldErrors()).isEmpty();
+    ValidationTestUtil.assertPassesValidation(() -> lobbyFormValidator.validate(form, LobbyForm.FormType.CREATE_LOBBY));
   }
 
   @Test
@@ -94,15 +79,10 @@ class LobbyFormValidatorTest {
 
     when(playerRepository.existsById(form.playerId())).thenReturn(true);
 
-    var result = lobbyFormValidator.validateWithLobby(form);
-
-    verify(lobbyFormValidator).validate(form);
-    verifyNoMoreInteractions(playerRepository, lobbyRepository);
-
-    assertTrue(result.hasErrors());
-    assertThat(result.fieldErrors())
-        .extracting(FieldError::fieldName, FieldError::errorCode)
-        .containsExactly(tuple(LobbyForm.LOBBY_ID_FIELD, "required"));
+    ValidationTestUtil.assertFailsValidationWithErrors(
+        () -> lobbyFormValidator.validate(form, LobbyForm.FormType.JOIN_LOBBY),
+        Map.of(LobbyForm.LOBBY_ID_FIELD, "lobbyId must not be null")
+    );
   }
 
   @Test
@@ -112,15 +92,10 @@ class LobbyFormValidatorTest {
     when(playerRepository.existsById(form.playerId())).thenReturn(true);
     when(lobbyRepository.existsById(form.lobbyId())).thenReturn(false);
 
-    var result = lobbyFormValidator.validateWithLobby(form);
-
-    verify(lobbyFormValidator).validate(form);
-    verifyNoMoreInteractions(playerRepository, lobbyRepository);
-
-    assertTrue(result.hasErrors());
-    assertThat(result.fieldErrors())
-        .extracting(FieldError::fieldName, FieldError::errorCode)
-        .containsExactly(tuple(LobbyForm.LOBBY_ID_FIELD, "invalid"));
+    ValidationTestUtil.assertFailsValidationWithErrors(
+        () -> lobbyFormValidator.validate(form, LobbyForm.FormType.JOIN_LOBBY),
+        Map.of(LobbyForm.LOBBY_ID_FIELD, "%s is not a valid lobbyId".formatted(form.lobbyId()))
+    );
   }
 
   @Test
@@ -130,12 +105,7 @@ class LobbyFormValidatorTest {
     when(playerRepository.existsById(form.playerId())).thenReturn(true);
     when(lobbyRepository.existsById(form.lobbyId())).thenReturn(true);
 
-    var result = lobbyFormValidator.validateWithLobby(form);
-
-    verify(lobbyFormValidator).validate(form);
-    verifyNoMoreInteractions(playerRepository, lobbyRepository);
-
-    assertFalse(result.hasErrors());
+    ValidationTestUtil.assertPassesValidation(() -> lobbyFormValidator.validate(form, LobbyForm.FormType.JOIN_LOBBY));
   }
 
 }
