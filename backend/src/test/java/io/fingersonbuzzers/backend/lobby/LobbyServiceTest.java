@@ -63,7 +63,6 @@ class LobbyServiceTest {
     assertThat(response.playerData())
         .extracting(PlayerDto::playerName)
         .isEqualTo(form.playerName());
-    assertThat(response.errors()).isNull();
   }
 
   @Test
@@ -93,7 +92,6 @@ class LobbyServiceTest {
     assertThat(response.playerData())
         .extracting(PlayerDto::playerName)
         .isEqualTo(form.playerName());
-    assertThat(response.errors()).isNull();
   }
 
   @Test
@@ -118,7 +116,6 @@ class LobbyServiceTest {
     assertThat(response.playerData())
         .extracting(PlayerDto::playerName)
         .isEqualTo(form.playerName());
-    assertThat(response.errors()).isNull();
   }
 
   @Test
@@ -151,7 +148,6 @@ class LobbyServiceTest {
     assertThat(playerArgumentCaptor.getValue())
         .extracting(Player::getLobby, Player::getName)
         .containsExactly(lobby, form.playerName());
-    assertThat(response.errors()).isNull();
     assertThat(response.playerData())
         .extracting(PlayerDto::playerName)
         .isEqualTo(form.playerName());
@@ -173,7 +169,6 @@ class LobbyServiceTest {
     assertThat(playerArgumentCaptor.getValue())
         .extracting(Player::getLobby, Player::getName)
         .containsExactly(lobby, form.playerName());
-    assertThat(response.errors()).isNull();
     assertThat(response.playerData())
         .extracting(PlayerDto::playerName)
         .isEqualTo(form.playerName());
@@ -196,7 +191,6 @@ class LobbyServiceTest {
     assertThat(player)
         .extracting(Player::getLobby, Player::getName)
         .containsExactly(lobby, form.playerName());
-    assertThat(response.errors()).isNull();
     assertThat(response.playerData())
         .extracting(PlayerDto::playerName)
         .isEqualTo(form.playerName());

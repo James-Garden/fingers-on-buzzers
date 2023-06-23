@@ -1,8 +1,10 @@
 package io.fingersonbuzzers.backend.lobby;
 
 import io.fingersonbuzzers.backend.player.PlayerRepository;
-import io.fingersonbuzzers.backend.validation.ValidationResult;
+import io.fingersonbuzzers.backend.validation.ValidationFailedException;
 import io.micrometer.common.util.StringUtils;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 
@@ -18,43 +20,43 @@ public class LobbyFormValidator {
     this.lobbyRepository = lobbyRepository;
   }
 
-  public ValidationResult validate(LobbyForm form) {
-    var errors = new ValidationResult();
+  public void validate(LobbyForm form, LobbyForm.FormType formType) throws ValidationFailedException {
+    var errors = new HashMap<String, String>();
 
     validatePlayerName(form, errors);
+    validatePlayerId(form, errors);
 
-    if (Objects.nonNull(form.playerId())) {
-      validatePlayerId(form, errors);
+    if (LobbyForm.FormType.JOIN_LOBBY.equals(formType)) {
+      validateLobbyId(form, errors);
     }
 
-    return errors;
+    if (!errors.isEmpty()) {
+      throw new ValidationFailedException(errors);
+    }
   }
 
-  public ValidationResult validateWithLobby(LobbyForm form) {
-    var errors = validate(form);
-
-    validateLobbyId(form, errors);
-
-    return errors;
-  }
-
-  private void validateLobbyId(LobbyForm form, ValidationResult errors) {
+  private void validateLobbyId(LobbyForm form, Map<String, String> errors) {
     if (Objects.isNull(form.lobbyId())) {
-      errors.reject(LobbyForm.LOBBY_ID_FIELD, "required");
+      errors.put(LobbyForm.LOBBY_ID_FIELD, "lobbyId must not be null");
     } else if (!lobbyRepository.existsById(form.lobbyId())) {
-      errors.reject(LobbyForm.LOBBY_ID_FIELD, "invalid");
+      errors.put(LobbyForm.LOBBY_ID_FIELD, "%s is not a valid lobbyId".formatted(form.lobbyId()));
     }
   }
 
-  private void validatePlayerName(LobbyForm form, ValidationResult errors) {
+  private void validatePlayerName(LobbyForm form, Map<String, String> errors) {
     if (StringUtils.isBlank(form.playerName())) {
-      errors.reject(LobbyForm.PLAYER_NAME_FIELD, "required");
+      errors.put(LobbyForm.PLAYER_NAME_FIELD, "playerName must not be blank");
     }
   }
 
-  private void validatePlayerId(LobbyForm form, ValidationResult errors) {
+  private void validatePlayerId(LobbyForm form, Map<String, String> errors) {
+    // playerId is not required, one will be created if null
+    if (Objects.isNull(form.playerId())) {
+      return;
+    }
+
     if (!playerRepository.existsById(form.playerId())) {
-      errors.reject(LobbyForm.PLAYER_ID_FIELD, "invalid");
+      errors.put(LobbyForm.PLAYER_ID_FIELD, "%s is not a valid playerId".formatted(form.playerId()));
     }
   }
 }
