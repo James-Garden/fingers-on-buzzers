@@ -31,7 +31,7 @@ class QuestionBootstrapService {
   public void bootstrapQuestionsData() throws IOException {
     LOGGER.debug("Attempting to initialise questions...");
     if (anyQuestionsExist()) {
-      LOGGER.debug("Questions already exist, aborting initialisation");
+      LOGGER.debug("Questions already exist, no initialisation necessary");
       return;
     }
 
@@ -41,8 +41,8 @@ class QuestionBootstrapService {
     var questions = MAPPER.readValue(questionsJson, new TypeReference<Collection<Question>>() {
     });
     LOGGER.trace("Successfully constructed {} Question objects", questions.size());
-    LOGGER.trace("Saving Question entities to database");
 
+    LOGGER.trace("Saving Question entities to database");
     var stopwatch = new StopWatch();
     stopwatch.start();
     questionRepository.saveAll(questions);

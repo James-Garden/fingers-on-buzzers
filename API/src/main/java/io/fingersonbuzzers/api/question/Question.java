@@ -39,6 +39,10 @@ public class Question {
     this.answer = answer;
   }
 
+  public UUID getId() {
+    return id;
+  }
+
   public String getQuestionText() {
     return questionText;
   }
