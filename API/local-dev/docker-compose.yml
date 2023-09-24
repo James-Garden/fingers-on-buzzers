@@ -3,6 +3,7 @@ version: '3.9'
 services:
 
   postgres-db:
+    restart: unless-stopped
     image: postgres:14.3-alpine
     ports:
       - target: 5432
@@ -11,3 +12,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: fingers_on_buzzers
+
+  redis:
+    restart: unless-stopped
+    image: redis:7.2.1-alpine3.18
+    ports:
+      - target: 6379
+        published: 32770

@@ -1,6 +1,7 @@
 package io.fingersonbuzzers.api.question;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,15 @@ public class QuestionQueryService {
         .setMaxResults(1);
 
     var results = query.getResultList();
+
+    if (results.isEmpty()) {
+      throw new EntityNotFoundException("Unable to find any questions for the given CriteriaQuery");
+    }
+    if (results.size() != 1) {
+      throw new IllegalStateException(
+          "Expected CriteriaQuery to return 1 result, got %d".formatted(results.size()));
+    }
+
     var result = results.get(0);
 
     if (result instanceof Question question) {
