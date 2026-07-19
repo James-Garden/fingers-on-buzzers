@@ -1,0 +1,99 @@
+edition = "2024";
+
+package fingersonbuzzers.protocol.v1;
+
+import "common.proto";
+
+message ClientMessage {
+  oneof body {
+    Host host = 1;
+    Join join = 2;
+    SetName set_name = 3;
+    UpdateSettings update_settings = 4;
+    RenameLobby rename_lobby = 5;
+    RenameTeam rename_team = 6;
+    MovePlayer move_player = 7;
+    ToggleReady toggle_ready = 8;
+    StartCountdown start_countdown = 9;
+    CancelCountdown cancel_countdown = 10;
+    BeginRound begin_round = 11;
+    NextRound next_round = 12;
+    FinishGame finish_game = 13;
+    RevealAnswer reveal_answer = 14;
+    Buzz buzz = 15;
+    Judge judge = 16;
+    SkipQuestion skip_question = 17;
+    AdjustPoints adjust_points = 18;
+    RevealNext reveal_next = 19;
+    RevealAll reveal_all = 20;
+    ReturnToLobby return_to_lobby = 21;
+  }
+}
+
+message Host {
+  string name = 1;
+}
+
+message Join {
+  string code = 1;
+  string name = 2;
+}
+
+message SetName {
+  string name = 1;
+}
+
+message UpdateSettings {
+  Settings settings = 1;
+}
+
+message RenameLobby {
+  string name = 1;
+}
+
+message RenameTeam {
+  string team_id = 1;
+  string name = 2;
+}
+
+message MovePlayer {
+  string player_id = 1;
+  string team_id = 2;
+}
+
+message ToggleReady {}
+
+message StartCountdown {}
+
+message CancelCountdown {}
+
+message BeginRound {}
+
+message NextRound {}
+
+message FinishGame {}
+
+message RevealAnswer {}
+
+message Buzz {}
+
+message Judge {
+  bool correct = 1;
+  bool award_bonus = 2;
+}
+
+message SkipQuestion {}
+
+message AdjustPoints {
+  oneof target {
+    string player_id = 1;
+    string team_id = 2;
+  }
+  int32 points = 3;
+}
+
+message RevealNext {}
+
+message RevealAll {}
+
+message ReturnToLobby {}

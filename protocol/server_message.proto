@@ -1,0 +1,108 @@
+edition = "2024";
+
+package fingersonbuzzers.protocol.v1;
+
+import "common.proto";
+
+enum Phase {
+  PHASE_UNSPECIFIED = 0;
+  LOBBY = 1;
+  COUNTDOWN = 2;
+  ROUND = 3;
+  BETWEEN = 4;
+  RESULTS = 5;
+}
+
+enum TeamColor {
+  TEAM_COLOR_UNSPECIFIED = 0;
+  RED = 1;
+  ORANGE = 2;
+  YELLOW = 3;
+  GREEN = 4;
+  BLUE = 5;
+  PURPLE = 6;
+  PINK = 7;
+}
+
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0;
+  INVALID_GAME_CODE = 1;
+  SESSION_FULL = 2;
+  NOT_HOST = 3;
+  INVALID_ACTION = 4;
+  NAME_REQUIRED = 5;
+  INTERNAL_ERROR = 6;
+}
+
+message Team {
+  string id = 1;
+  string name = 2;
+  TeamColor color = 3;
+}
+
+message ServerMessage {
+  oneof body {
+    State state = 1;
+    BuzzLocked buzz_locked = 2;
+    CountdownTick countdown_tick = 3;
+    Error error = 4;
+  }
+}
+
+message Question {
+  string text = 1;
+  string answer = 2;
+  int32 bonus = 3;
+}
+
+message Round {
+  int32 points_correct = 1;
+  int32 points_incorrect = 2;
+  repeated Question questions = 3;
+}
+
+message State {
+  Phase phase = 1;
+  string code = 2;
+  string lobby_name = 3;
+  Settings settings = 4;
+  repeated Player players = 5;
+  repeated Team teams = 6;
+  repeated Round rounds = 7;
+  int32 round_idx = 8;
+  int32 question_idx = 9;
+  ActiveBuzz buzz = 10;
+  int32 reveal_idx = 11;
+  string self_player_id = 12;
+  bool is_host = 13;
+  string self_token = 14;
+  string self_host_token = 15;
+}
+
+message Player {
+  string id = 1;
+  string name = 2;
+  string team_id = 3;
+  bool ready = 4;
+  int32 score = 5;
+  bool connected = 6;
+}
+
+message ActiveBuzz {
+  string player_id = 1;
+  int64 ts = 2;
+}
+
+message BuzzLocked {
+  string player_id = 1;
+  int64 ts = 2;
+}
+
+message CountdownTick {
+  int32 n = 1;
+}
+
+message Error {
+  ErrorCode code = 1;
+  string message = 2;
+}

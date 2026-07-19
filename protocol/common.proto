@@ -1,0 +1,12 @@
+edition = "2024";
+
+package fingersonbuzzers.protocol.v1;
+
+message Settings {
+  bool hide_rules = 1;
+  bool show_question_to_players = 2;
+  bool points_override = 3;
+  bool teams_enabled = 4;
+  bool points_hidden = 5;
+  bool click_to_reveal = 6;
+}
